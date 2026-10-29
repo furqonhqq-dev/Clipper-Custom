@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OpenClipper Custom</title>
+    <script type="module" src="/src/main.js"></script>
+  </head>
+  <body>
+    <div class="app">
+      <aside>
+        <div class="brand">◈ OpenClipper <small>CUSTOM · v0.1.0</small></div>
+        <nav aria-label="Navigasi utama">
+          <button data-page="home" aria-current="page">⌂ Beranda</button
+          ><button data-page="create">＋ Buat Klip</button
+          ><button data-page="projects">▤ Proyek</button
+          ><button data-page="settings">⚙ Pengaturan</button>
+        </nav>
+        <div class="aside-note">
+          Ruang kreatif Anda.<br /><span
+            >Dari video panjang ke cerita singkat.</span
+          >
+        </div>
+      </aside>
+      <main>
+        <header>
+          <span>WORKSPACE / OPENCLIPPER</span
+          ><span class="badge">Fondasi v0.1.0</span>
+        </header>
+        <section id="home">
+          <p class="eyebrow">SELAMAT DATANG</p>
+          <h1>Cerita hebat dimulai<br />dari satu klip.</h1>
+          <p class="muted">
+            Impor video Anda dan siapkan format untuk ide berikutnya.
+          </p>
+          <button class="primary" id="begin">＋ Buat klip baru</button>
+          <div class="cards" id="features"></div>
+        </section>
+        <section id="create" hidden>
+          <p class="eyebrow">STUDIO</p>
+          <h1>Buat Klip</h1>
+          <p class="muted">
+            Mulai dengan video lokal. File tetap berada di perangkat Anda.
+          </p>
+          <div id="drop-zone" class="drop-zone">
+            <strong>Letakkan video di sini</strong>
+            <p>atau pilih video dari perangkat</p>
+            <button class="primary" id="import">Pilih video</button
+            ><small
+              >MP4, WebM, MOV, MKV, AVI · dukungan codec mengikuti
+              WebView2</small
+            >
+          </div>
+          <p id="status" role="status" aria-live="polite"></p>
+          <div class="studio">
+            <div class="preview ratio-16-9" id="preview-frame">
+              <video
+                id="video"
+                controls
+                preload="metadata"
+                aria-label="Preview video lokal"
+              ></video
+              ><span id="placeholder">Preview video</span>
+            </div>
+            <div class="panel">
+              <h2>Pengaturan klip</h2>
+              <p id="filename">Belum ada video</p>
+              <p class="muted">Durasi: <span id="duration">—</span></p>
+              <label for="ratio">Rasio tampilan</label
+              ><select id="ratio">
+                <option value="9:16">9:16 · Vertikal</option>
+                <option value="16:9" selected>16:9 · Lanskap</option>
+                <option value="1:1">1:1 · Persegi</option>
+              </select>
+              <p class="hint">
+                Rasio mengubah area preview. Pemotongan dan ekspor video belum
+                tersedia.
+              </p>
+            </div>
+          </div>
+        </section>
+        <section id="projects" hidden>
+          <p class="eyebrow">KOLEKSI</p>
+          <h1>Proyek</h1>
+          <div class="panel">
+            <h2>Ruang untuk karya berikutnya</h2>
+            <p class="muted">
+              Penyimpanan proyek belum tersedia pada v0.1.0. Video yang diimpor
+              hanya aktif selama sesi ini.
+            </p>
+            <button class="primary" id="project-create">
+              Mulai dengan video
+            </button>
+          </div>
+        </section>
+        <section id="settings" hidden>
+          <p class="eyebrow">PREFERENSI</p>
+          <h1>Pengaturan</h1>
+          <div class="panel">
+            <h2>OpenClipper Custom</h2>
+            <p>Versi 0.1.0 · Bahasa Indonesia · Tema gelap</p>
+            <p class="muted">
+              Pemrosesan AI, unduhan model, subtitle, editor manual, dan ekspor
+              belum diimplementasikan. Tidak ada video yang diunggah oleh
+              aplikasi.
+            </p>
+          </div>
+        </section>
+        <footer>OPENCLIPPER CUSTOM <span>Ruang kerja video lokal</span></footer>
+      </main>
+    </div>
+  </body>
+</html>
