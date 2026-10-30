@@ -17,8 +17,8 @@ int main(int argc, char** argv) {
     }
     try {
         openshot::Settings::Instance()->HARDWARE_DECODER = 0;
-        openshot::Clip background(std::string(argv[1]));
-        openshot::Clip overlay(std::string(argv[2]));
+        openshot::Clip background{std::string(argv[1])};
+        openshot::Clip overlay{std::string(argv[2])};
         background.Layer(0);
         background.Position(0.0);
         background.Start(0.0);
