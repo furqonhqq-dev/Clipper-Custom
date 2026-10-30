@@ -67,6 +67,9 @@ jobs:
           pacman -Q mingw-w64-x86_64-ffmpeg mingw-w64-x86_64-qt6-base mingw-w64-x86_64-gcc >> poc-results/engine-b-native/versions.txt
           cmake --version >> poc-results/engine-b-native/versions.txt
           g++ --version | head -1 >> poc-results/engine-b-native/versions.txt
+          # Export the actual MSYS2 FFprobe directory for the later PowerShell validator.
+          command -v ffprobe
+          echo "FFPROBE_DIR=$(cygpath -w /mingw64/bin)" >> "$GITHUB_ENV"
 
       - name: Build and install native libopenshot-audio
         id: build_audio
@@ -149,6 +152,9 @@ jobs:
           SMOKE_BUILD: ${{ steps.build_smoke.outcome }}
           SMOKE_RUN: ${{ steps.smoke_run.outcome }}
         run: |
+          # FFprobe was installed in MSYS2, not on PowerShell's default PATH.
+          $env:PATH = "$env:FFPROBE_DIR;$env:PATH"
+          ffprobe -version | Select-Object -First 1
           python poc/engine-b/validate_native.py --assert-pass `
             --dir poc-results/engine-b-native `
             --audio-build "$env:AUDIO_BUILD" `
