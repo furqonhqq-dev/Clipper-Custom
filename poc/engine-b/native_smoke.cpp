@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
         }
         preview_frame->Save(std::string(argv[4]), 1.0f, "PNG", 100);
 
-        openshot::FFmpegWriter writer(std::string(argv[3]));
+        openshot::FFmpegWriter writer{std::string(argv[3])};
         // Use the broadly available native MPEG-4 Part 2 encoder for the
         // native-build feasibility test. H.264/AAC is a later P0 gate.
         writer.SetVideoOptions(
