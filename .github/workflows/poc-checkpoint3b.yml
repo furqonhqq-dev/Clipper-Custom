@@ -155,8 +155,10 @@ jobs:
             poc-results/checkpoint3b/report.json
             poc-results/checkpoint3b/*/a/a.json
             poc-results/checkpoint3b/*/b/b.json
-            poc-results/checkpoint3b/*/a/frame_*.ppm
-            poc-results/checkpoint3b/*/b/frame_*.ppm
+            poc-results/checkpoint3b/*/a/frame_1.ppm
+            poc-results/checkpoint3b/*/a/frame_60.ppm
+            poc-results/checkpoint3b/*/b/frame_1.ppm
+            poc-results/checkpoint3b/*/b/frame_60.ppm
             poc-results/engine-b-native/versions.txt
           if-no-files-found: warn
           retention-days: 7
