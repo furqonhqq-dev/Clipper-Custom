@@ -1,0 +1,61 @@
+name: PoC v0.2.0 engine comparison (experimental)
+on:
+  push:
+    branches:
+      - poc/v0.2.0-engine-comparison
+    paths:
+      - "poc/**"
+      - ".github/workflows/poc-engine-comparison.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+
+jobs:
+  engine-a-ffmpeg:
+    name: Engine A - Windows FFmpeg render smoke
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install FFmpeg and FFprobe
+        shell: pwsh
+        run: |
+          if (-not (Get-Command ffmpeg -ErrorAction SilentlyContinue) -or -not (Get-Command ffprobe -ErrorAction SilentlyContinue)) {
+            choco install ffmpeg -y --no-progress
+            refreshenv
+          }
+          ffmpeg -version
+          ffprobe -version
+      - name: Run synthetic composite test
+        shell: pwsh
+        run: python poc/engine-a/ffmpeg_smoke.py --output poc-results/engine-a
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: poc-engine-a-windows-report
+          path: poc-results/engine-a/
+          if-no-files-found: warn
+          retention-days: 7
+
+  engine-b-feasibility:
+    name: Engine B - libopenshot Windows feasibility (not benchmark)
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Probe binding availability without assuming native support
+        shell: pwsh
+        run: python poc/engine-b/libopenshot_probe.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: poc-engine-b-windows-feasibility
+          path: poc-results/engine-b/report.json
+          if-no-files-found: warn
+          retention-days: 7
