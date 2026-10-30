@@ -1,0 +1,153 @@
+name: PoC M0-C1 libopenshot native Windows build
+on:
+  push:
+    branches:
+      - poc/v0.2.0-engine-comparison
+    paths:
+      - "poc/engine-b/native_smoke.cpp"
+      - "poc/engine-b/CMakeLists.txt"
+      - "poc/engine-b/validate_native.py"
+      - ".github/workflows/poc-libopenshot-native.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-windows:
+    name: Windows x64 native build and render
+    runs-on: windows-latest
+    timeout-minutes: 55
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - name: Preserve LF line endings
+        shell: pwsh
+        run: git config --global core.autocrlf input
+
+      - uses: actions/checkout@v4
+
+      # Exact upstream SHAs: avoid silently changing the dependency during PoC.
+      - name: Checkout libopenshot
+        uses: actions/checkout@v4
+        with:
+          repository: OpenShot/libopenshot
+          ref: 6f63ecae5037ce598acf6a67c4d00d1eea842bb1
+          path: poc-deps/libopenshot
+
+      - name: Checkout libopenshot-audio
+        uses: actions/checkout@v4
+        with:
+          repository: OpenShot/libopenshot-audio
+          ref: c6d226643ef1fdf9d5e00921eebf3ede0e838a7e
+          path: poc-deps/libopenshot-audio
+
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            git
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-ninja
+            mingw-w64-x86_64-ffmpeg
+            mingw-w64-x86_64-qt6-base
+            mingw-w64-x86_64-qt6-svg
+            mingw-w64-x86_64-zlib
+            mingw-w64-x86_64-jsoncpp
+            mingw-w64-x86_64-pkgconf
+
+      - name: Record build environment
+        run: |
+          mkdir -p poc-results/engine-b-native
+          git -C poc-deps/libopenshot rev-parse HEAD > poc-results/engine-b-native/versions.txt
+          git -C poc-deps/libopenshot-audio rev-parse HEAD >> poc-results/engine-b-native/versions.txt
+          pacman -Q mingw-w64-x86_64-ffmpeg mingw-w64-x86_64-qt6-base mingw-w64-x86_64-gcc >> poc-results/engine-b-native/versions.txt
+          cmake --version >> poc-results/engine-b-native/versions.txt
+          g++ --version | head -1 >> poc-results/engine-b-native/versions.txt
+
+      - name: Build and install native libopenshot-audio
+        id: build_audio
+        run: |
+          cmake -S poc-deps/libopenshot-audio -B poc-deps/libopenshot-audio/build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX="$PWD/poc-deps/install" \
+            -DENABLE_AUDIO_DOCS=OFF
+          cmake --build poc-deps/libopenshot-audio/build --parallel 2
+          cmake --install poc-deps/libopenshot-audio/build
+
+      - name: Build and install native libopenshot
+        id: build_openshot
+        run: |
+          cmake -S poc-deps/libopenshot -B poc-deps/libopenshot/build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX="$PWD/poc-deps/install" \
+            -DCMAKE_PREFIX_PATH="$PWD/poc-deps/install" \
+            -DOpenShotAudio_ROOT="$PWD/poc-deps/install" \
+            -DUSE_QT6=ON \
+            -DENABLE_MAGICK=OFF \
+            -DENABLE_OPENCV=OFF \
+            -DENABLE_LIB_DOCS=OFF \
+            -DBUILD_TESTING=OFF \
+            -DENABLE_PYTHON=OFF \
+            -DENABLE_RUBY=OFF \
+            -DUSE_HW_ACCEL=OFF
+          cmake --build poc-deps/libopenshot/build --parallel 2
+          cmake --install poc-deps/libopenshot/build
+          find poc-deps/install -iname '*openshot*.dll' -print
+
+      - name: Compile native C++ timeline and render smoke
+        id: build_smoke
+        run: |
+          cmake -S poc/engine-b -B poc-deps/native-smoke-build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DOPENSHOT_INSTALL_PREFIX="$PWD/poc-deps/install"
+          cmake --build poc-deps/native-smoke-build --parallel 2
+
+      - name: Run native render and extract composite frame
+        id: smoke_run
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: |
+          export PATH="$PWD/poc-deps/install/bin:$PATH"
+          ffmpeg -hide_banner -loglevel error -y \
+            -f lavfi -i "testsrc2=size=320x180:rate=30:duration=2" \
+            -f lavfi -i "sine=frequency=440:sample_rate=48000:duration=2" \
+            -t 2 -c:v mpeg4 -q:v 4 -pix_fmt yuv420p -c:a aac \
+            poc-results/engine-b-native/background.mp4
+          ffmpeg -hide_banner -loglevel error -y \
+            -f lavfi -i "color=c=red:s=320x180:r=30:d=2" \
+            -f lavfi -i "sine=frequency=660:sample_rate=48000:duration=2" \
+            -t 2 -c:v mpeg4 -q:v 4 -pix_fmt yuv420p -c:a aac \
+            poc-results/engine-b-native/overlay.mp4
+          poc-deps/native-smoke-build/native_smoke.exe \
+            poc-results/engine-b-native/background.mp4 \
+            poc-results/engine-b-native/overlay.mp4 \
+            poc-results/engine-b-native/output.mp4 \
+            poc-results/engine-b-native/frame.png
+
+      - name: Write strict build and native render report
+        if: always()
+        shell: pwsh
+        env:
+          AUDIO_BUILD: ${{ steps.build_audio.outcome }}
+          LIBRARY_BUILD: ${{ steps.build_openshot.outcome }}
+          SMOKE_BUILD: ${{ steps.build_smoke.outcome }}
+          SMOKE_RUN: ${{ steps.smoke_run.outcome }}
+        run: |
+          python poc/engine-b/validate_native.py --assert-pass `
+            --dir poc-results/engine-b-native `
+            --audio-build "$env:AUDIO_BUILD" `
+            --library-build "$env:LIBRARY_BUILD" `
+            --smoke-build "$env:SMOKE_BUILD" `
+            --smoke-run "$env:SMOKE_RUN"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: poc-engine-b-native-windows-checkpoint1
+          path: poc-results/engine-b-native/
+          if-no-files-found: warn
+          retention-days: 7
