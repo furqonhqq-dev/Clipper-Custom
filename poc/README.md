@@ -12,10 +12,13 @@ Compare the feasibility of:
 - **B:** libopenshot for native timeline/compositing, accessed via an adapter
   to be prototyped later.
 
-The current M0 first increment deliberately **does not claim** a completed
-A-versus-B comparison. A has a runnable synthetic offline composition/render
-smoke test. B has an availability probe only. Neither has a realtime two-layer
-preview benchmark or a complete Tauri/Rust adapter yet.
+The initial M0 increment deliberately **does not claim** a completed
+A-versus-B comparison. A has a synthetic offline composition/render smoke test.
+B first had an availability probe, then successfully built and rendered with a
+native Windows C++/libopenshot smoke harness in Checkpoint 1. Checkpoint 2
+now experiments with two-layer frame extraction, warm native seek calls and
+FFmpeg CLI offline baselines; **neither engine has a verified interactive
+realtime preview or a Tauri/Rust adapter yet**. See `poc/checkpoint2/README.md`.
 
 ## Run A locally
 
@@ -41,7 +44,9 @@ python poc/engine-b/libopenshot_probe.py
 
 It reports whether Python bindings/native libraries can be discovered.
 Missing Python bindings is not evidence that a C++ libopenshot integration
-is impossible. No native libopenshot render is attempted in this increment.
+is impossible. A separate Checkpoint 1 Windows workflow subsequently built
+libopenshot and completed a native render. The original probe remains a
+historical feasibility check.
 
 A separate GitHub Actions workflow, `PoC v0.2.0 engine comparison
 (experimental)`, runs on pushes to this branch and can be invoked manually
