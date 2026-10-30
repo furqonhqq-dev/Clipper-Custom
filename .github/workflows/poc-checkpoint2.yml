@@ -1,0 +1,160 @@
+name: PoC M0-C2 two-layer frame and seek experiment
+on:
+  push:
+    branches:
+      - poc/v0.2.0-engine-comparison
+    paths:
+      - "poc/checkpoint2/**"
+      - ".github/workflows/poc-checkpoint2.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-windows:
+    name: Windows x64 two-layer offline frame benchmark
+    runs-on: windows-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - name: Preserve LF line endings
+        shell: pwsh
+        run: git config --global core.autocrlf input
+
+      - uses: actions/checkout@v4
+
+      # Exact upstream SHAs: avoid silently changing the dependency during PoC.
+      - name: Checkout libopenshot
+        uses: actions/checkout@v4
+        with:
+          repository: OpenShot/libopenshot
+          ref: 6f63ecae5037ce598acf6a67c4d00d1eea842bb1
+          path: poc-deps/libopenshot
+
+      - name: Checkout libopenshot-audio
+        uses: actions/checkout@v4
+        with:
+          repository: OpenShot/libopenshot-audio
+          ref: c6d226643ef1fdf9d5e00921eebf3ede0e838a7e
+          path: poc-deps/libopenshot-audio
+
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            git
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-ninja
+            mingw-w64-x86_64-ffmpeg
+            mingw-w64-x86_64-qt6-base
+            mingw-w64-x86_64-qt6-svg
+            mingw-w64-x86_64-zlib
+            mingw-w64-x86_64-jsoncpp
+            mingw-w64-x86_64-pkgconf
+            mingw-w64-x86_64-python
+
+      - name: Record build environment
+        run: |
+          mkdir -p poc-results/engine-b-native
+          git -C poc-deps/libopenshot rev-parse HEAD > poc-results/engine-b-native/versions.txt
+          git -C poc-deps/libopenshot-audio rev-parse HEAD >> poc-results/engine-b-native/versions.txt
+          pacman -Q mingw-w64-x86_64-ffmpeg mingw-w64-x86_64-qt6-base mingw-w64-x86_64-gcc >> poc-results/engine-b-native/versions.txt
+          cmake --version >> poc-results/engine-b-native/versions.txt
+          g++ --version | head -1 >> poc-results/engine-b-native/versions.txt
+          # Export the actual MSYS2 FFprobe directory for the later PowerShell validator.
+          command -v ffprobe
+          echo "FFPROBE_DIR=$(cygpath -w /mingw64/bin)" >> "$GITHUB_ENV"
+
+      - name: Build and install native libopenshot-audio
+        id: build_audio
+        run: |
+          cmake -S poc-deps/libopenshot-audio -B poc-deps/libopenshot-audio/build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX="$PWD/poc-deps/install" \
+            -DENABLE_AUDIO_DOCS=OFF
+          cmake --build poc-deps/libopenshot-audio/build --parallel 2
+          cmake --install poc-deps/libopenshot-audio/build
+
+      # The pinned upstream Exceptions.h omits <cstdint>, which GCC needs.
+      # Patch only the temporary CI checkout, never the upstream repository.
+      - name: Apply pinned upstream header compatibility fix
+        run: |
+          header="poc-deps/libopenshot/src/Exceptions.h"
+          test -f "$header"
+          if ! grep -Fq '#include <cstdint>' "$header"; then
+            sed -i '/^#include <cstring>$/a #include <cstdint>' "$header"
+          fi
+          grep -Fq '#include <cstdint>' "$header"
+          git -C poc-deps/libopenshot diff -- src/Exceptions.h
+
+      - name: Build and install native libopenshot
+        id: build_openshot
+        run: |
+          cmake -S poc-deps/libopenshot -B poc-deps/libopenshot/build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX="$PWD/poc-deps/install" \
+            -DCMAKE_PREFIX_PATH="$PWD/poc-deps/install" \
+            -DOpenShotAudio_ROOT="$PWD/poc-deps/install" \
+            -DUSE_QT6=ON \
+            -DENABLE_MAGICK=OFF \
+            -DENABLE_OPENCV=OFF \
+            -DENABLE_LIB_DOCS=OFF \
+            -DBUILD_TESTING=OFF \
+            -DENABLE_PYTHON=OFF \
+            -DENABLE_RUBY=OFF \
+            -DUSE_HW_ACCEL=OFF
+          cmake --build poc-deps/libopenshot/build --parallel 2
+          cmake --install poc-deps/libopenshot/build
+          find poc-deps/install -iname '*openshot*.dll' -print
+
+      - name: Generate identical two-video two-audio inputs
+        id: generate
+        run: |
+          python poc/checkpoint2/benchmark.py generate
+
+      - name: Compile native libopenshot preview-frame harness
+        id: build_preview
+        run: |
+          cmake -S poc/checkpoint2 -B poc-deps/checkpoint2-build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DOPENSHOT_INSTALL_PREFIX="$PWD/poc-deps/install"
+          cmake --build poc-deps/checkpoint2-build --parallel 2
+
+      - name: Benchmark persistent native libopenshot timeline
+        id: benchmark_b
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: |
+          export PATH="$PWD/poc-deps/install/bin:$PATH"
+          poc-deps/checkpoint2-build/preview_benchmark.exe \
+            poc-results/checkpoint2/background.mp4 \
+            poc-results/checkpoint2/overlay.mp4 \
+            poc-results/checkpoint2/b
+
+      - name: Benchmark FFmpeg filtergraph CLI baseline
+        id: benchmark_a
+        run: |
+          python poc/checkpoint2/benchmark.py a
+
+      - name: Validate streams, frame samples and SSIM
+        id: validate
+        run: |
+          python poc/checkpoint2/benchmark.py validate
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: poc-checkpoint2-windows-results
+          path: |
+            poc-results/checkpoint2/report.json
+            poc-results/checkpoint2/*/timings.json
+            poc-results/checkpoint2/*/export.mp4
+            poc-results/checkpoint2/*/preview_*.png
+            poc-results/checkpoint2/*/export_*.png
+          if-no-files-found: warn
+          retention-days: 7
