@@ -1,6 +1,6 @@
 # Checkpoint 3 — Preview and timeline responsiveness
 
-## Status: C3A implementation submitted, Windows results pending
+## Status: C3A Windows passed; C3B submitted for Windows validation
 
 The user approved proceeding after Checkpoint 2. Changes are confined to
 `poc/v0.2.0-engine-comparison`. No merge into `main`, no replacement of
@@ -33,15 +33,35 @@ frame; B warms up the timeline. Both are CPU-oriented and offscreen.
 They do not display video to a user. Both input files contain AAC
 audio, but neither harness plays or synchronizes audio.
 
-### C3B — Interactive seek/scrub harness (NOT implemented)
+### C3B — Native random seek/scrub prototype (implemented; CI pending)
 
-Required before claiming an interactive timeline:
-- Persistent FFmpeg decoding and compositing without restarting a CLI
-  process for every seek, comparable to native libopenshot timeline seeks.
-- Matching random and sequential seek scripts, cold and warm runs,
-  1080p assets, frame correctness and cache state.
-- Explicitly record p50/p95 seek latency and frame delivery time after
-  user scrubbing.
+Workflow: `.github/workflows/poc-checkpoint3b.yml`.
+
+- Reuse C3A's identical 4-second, 30 FPS synthetic inputs at 640x360
+  and 1920x1080.
+- Engine A: **persistent native FFmpeg C++ libavformat/libavcodec**
+  contexts; seek with `av_seek_frame`, flush, decode until requested
+  timestamp, convert both frames to RGB24 and blend 50% on CPU.
+  This is a new prototype, not the finished custom preview engine.
+- Engine B: **persistent libopenshot C++ Timeline**, request the same
+  frame indices, convert RGBA to RGB24, and compute a sampled pixel hash.
+- Both run identical 12-frame random scripts twice in one process.
+  The first pass is **not a cold-cache benchmark**; the repeat pass
+  measures behavior with caches and filesystem state already warmed.
+- Record p50/p95/max request latency for each pass, repeat hash
+  determinism, FFmpeg PTS accuracy, and sample PPM images.
+- Compare a subset of images with SSIM as a **diagnostic**, not a
+  cross-engine visual equivalence claim.
+
+**Green CI means data-integrity gates passed**, not that interactive
+scrubbing is ready or that either engine meets a UI responsiveness target.
+The engines still have different compositors, decoder caches and memory
+paths; results must be interpreted with these caveats.
+
+Still not implemented: real UI seek interaction, user-triggered request
+cancellation, true cold-cache runs, equal cache-policy experiments,
+A/V playback sync, GPU/CPU/RAM profiling, Tauri/Rust adapter, Windows
+installer and a final engine selection.
 
 ### C3C — Playback, resources and Tauri/Rust integration (NOT implemented)
 
