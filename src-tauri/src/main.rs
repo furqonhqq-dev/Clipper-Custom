@@ -71,7 +71,8 @@ mod c3c_diagnostics {
         let mut kernel = FileTime::default();
         let mut user = FileTime::default();
 
-        let memory_ok = unsafe { GetProcessMemoryInfo(process, &mut memory, memory.cb) };
+        let memory_size = memory.cb;
+        let memory_ok = unsafe { GetProcessMemoryInfo(process, &mut memory, memory_size) };
         let times_ok = unsafe {
             GetProcessTimes(
                 process,
