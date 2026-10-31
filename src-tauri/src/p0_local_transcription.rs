@@ -2,7 +2,7 @@
 // The user explicitly selects FFmpeg, whisper-cli and the Whisper model.
 // No shell interpolation, downloads, background services or network requests.
 #[cfg(windows)]
-use std::{fs, path::{Path, PathBuf}, process::{Command, Stdio}, time::{SystemTime, UNIX_EPOCH}};
+use std::{fs, path::PathBuf, process::{Command, Stdio}, time::{SystemTime, UNIX_EPOCH}};
 
 #[cfg(windows)]
 fn checked_file(raw: String, expected: &[&str]) -> Result<PathBuf, String> {
@@ -40,7 +40,7 @@ pub fn transcribe(video_path: String, ffmpeg_path: String, whisper_path: String,
     let ffmpeg = checked_file(ffmpeg_path, &["ffmpeg.exe"])?;
     let whisper = checked_file(whisper_path, &["whisper-cli.exe"])?;
     let model = PathBuf::from(model_path);
-    if !model.is_file() || !model.extension().is_some_and(|e| e.eq_ignore_ascii_case("bin")) {
+    if !model.is_file() || !model.extension().and_then(|e|e.to_str()).is_some_and(|e| e.eq_ignore_ascii_case("bin")) {
         return Err("Pilih model Whisper ggml (.bin) yang sudah tersedia di komputer.".into());
     }
     let model = fs::canonicalize(model).map_err(|e| e.to_string())?;
