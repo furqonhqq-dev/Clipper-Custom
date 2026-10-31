@@ -216,6 +216,18 @@
       <div class="p0-steps" aria-label="Langkah analisis awal">
         <span>1 · Video panjang</span><span>2 · Transkrip SRT/VTT</span><span>3 · Cari kandidat</span><span>4 · Preview &amp; pilih</span>
       </div>
+      <details class="panel p0-local-ai">
+        <summary>✧ Transkripsi Otomatis AI Lokal (Eksperimen Windows)</summary>
+        <p class="hint">Jika FFmpeg, whisper-cli, dan model Whisper sudah tersedia, kamu bisa membuat transkrip langsung dari video tanpa internet. Komponen ini belum dibundel dalam installer; tidak ada unduhan otomatis.</p>
+        <div class="p0-native-grid">
+          <button data-p0-pick="video">1 · Pilih video untuk AI</button><span id="p0-native-video">Belum dipilih</span>
+          <button data-p0-pick="ffmpeg">2 · Pilih FFmpeg</button><span id="p0-native-ffmpeg">Belum dipilih</span>
+          <button data-p0-pick="whisper">3 · Pilih Whisper CLI</button><span id="p0-native-whisper">Belum dipilih</span>
+          <button data-p0-pick="model">4 · Pilih model Whisper (.bin)</button><span id="p0-native-model">Belum dipilih</span>
+        </div>
+        <button class="primary" id="p0-transcribe" disabled>Mulai Transkripsi AI Lokal</button>
+        <p id="p0-native-status" class="hint" role="status">Pilih empat file di atas. Pemrosesan bisa memakan waktu lama bergantung pada durasi video dan kemampuan laptop.</p>
+      </details>
       <div class="p0-workspace">
         <div class="panel p0-input-panel">
           <h2>Mulai dari video sendiri</h2>
