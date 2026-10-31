@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1",
     "tauri": "tauri",
-    "check": "node --check src/main.js && node --check src/modules/video.js && node --check src/modules/features.js && node --test tests/*.test.js",
+    "check": "node --check src/main.js && node --check src/modules/c3c-preview.js && node --check tests/browser-c3c.mjs && node --check src/modules/video.js && node --check src/modules/features.js && node --test tests/*.test.js",
     "test:browser": "node tests/browser-smoke.mjs"
   },
   "dependencies": {
