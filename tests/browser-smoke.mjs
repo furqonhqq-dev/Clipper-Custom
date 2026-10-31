@@ -37,9 +37,9 @@ let browser;
   await page.waitForFunction(
     () => document.querySelector("#duration").textContent === "0:02",
   );
-  await page.locator("video").evaluate((v) => v.play());
+  await page.locator("#video").evaluate((v) => v.play());
   await page.waitForFunction(
-    () => document.querySelector("video").currentTime > 0,
+    () => document.querySelector("#video").currentTime > 0,
   );
   for (const ratio of ["9:16", "1:1", "16:9"]) {
     await page.locator("#ratio").selectOption(ratio);
@@ -53,7 +53,7 @@ let browser;
     );
   }
   await page.evaluate(async () => {
-    const response = await fetch(document.querySelector("video").src);
+    const response = await fetch(document.querySelector("#video").src);
     const data = new DataTransfer();
     data.items.add(
       new File([await response.blob()], "drop.webm", { type: "video/webm" }),
