@@ -129,3 +129,41 @@ window.addEventListener("beforeunload", () => {
 
 // Isolated C3C1 prototype; does not modify the working v0.1 import/preview flow.
 mountC3C({ isTauri: isTauri(), invoke });
+
+// C3C2 dashboard/navigation UX. UI controls are real; unimplemented features
+// are explicitly shown as future plans instead of pretending to work.
+const app = $("app");
+function toggleSidebar() {
+  const collapsed = app.classList.toggle("sidebar-collapsed");
+  for (const id of ["sidebar-toggle", "mobile-menu"]) {
+    $(id).setAttribute("aria-expanded", String(!collapsed));
+    $(id).setAttribute("aria-label", collapsed ? "Buka menu samping" : "Tutup menu samping");
+  }
+}
+$("sidebar-toggle").onclick = toggleSidebar;
+$("mobile-menu").onclick = toggleSidebar;
+for (const button of document.querySelectorAll("[data-goto]"))
+  button.onclick = () => navigate(button.dataset.goto);
+for (const button of document.querySelectorAll("[data-mode]")) {
+  button.onclick = () => {
+    const pro = button.dataset.mode === "pro";
+    app.classList.toggle("mode-easy", !pro);
+    for (const item of document.querySelectorAll("[data-mode]"))
+      item.setAttribute("aria-pressed", String(item === button));
+  };
+}
+app.classList.add("mode-easy");
+$("dashboard-preview").onclick = () => navigate("c3c");
+$("dash-font").addEventListener("change", () => {
+  $("subtitle-sample").dataset.font = $("dash-font").value;
+});
+$("apply-quick").onclick = () => {
+  const ratio = $("dash-ratio").value;
+  const layout = $("dash-layout").value;
+  window.dispatchEvent(new CustomEvent("openclipper:preset", {
+    detail: { ratio, layout },
+  }));
+  $("dash-feedback").textContent =
+    "Pengaturan layout dan rasio diterapkan ke Preview Dua Video. Gaya font hanya contoh tampilan.";
+  navigate("c3c");
+};
