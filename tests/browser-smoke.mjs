@@ -17,11 +17,11 @@ let browser;
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("http://127.0.0.1:1421");
   await page
-    .getByRole("heading", { name: "Cerita hebat dimulai dari satu klip." })
+    .getByRole("heading", { name: "Mau buat video apa hari ini?" })
     .waitFor();
   assert.equal(await page.locator("article").count(), 4);
-  await page.getByRole("button", { name: "Proyek", exact: false }).click();
-  await page.getByRole("heading", { name: "Proyek", exact: true }).waitFor();
+  await page.getByRole("button", { name: "Proyek Saya", exact: false }).click();
+  await page.getByRole("heading", { name: "Lanjutkan Karya", exact: true }).waitFor();
   await page.getByRole("button", { name: "Pengaturan", exact: false }).click();
   await page
     .getByRole("heading", { name: "Pengaturan", exact: true })
