@@ -1,172 +1,234 @@
 <!doctype html>
 <html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>OpenClipper Custom</title>
-    <script type="module" src="/src/main.js"></script>
-  </head>
-  <body>
-    <div class="app">
-      <aside>
-        <div class="brand">◈ OpenClipper <small>CUSTOM · v0.1.0</small></div>
-        <nav aria-label="Navigasi utama">
-          <button data-page="home" aria-current="page">⌂ Beranda</button
-          ><button data-page="create">＋ Buat Klip</button
-          ><button data-page="c3c">◧ Preview Lab C3C</button><button data-page="projects">▤ Proyek</button
-          ><button data-page="settings">⚙ Pengaturan</button>
-        </nav>
-        <div class="aside-note">
-          Ruang kreatif Anda.<br /><span
-            >Dari video panjang ke cerita singkat.</span
-          >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OpenClipper Custom — C3C2</title>
+  <script type="module" src="/src/main.js"></script>
+</head>
+<body>
+<div class="app" id="app">
+  <aside id="sidebar" aria-label="Menu aplikasi">
+    <div class="sidebar-head">
+      <button id="sidebar-toggle" class="hamburger" aria-label="Tutup menu samping" aria-expanded="true" title="Buka/tutup menu">☰</button>
+      <div class="brand">◈ <span class="brand-name">OpenClipper <em>Custom</em></span><small class="brand-sub">C3C2 · Eksperimen</small></div>
+    </div>
+    <nav aria-label="Navigasi utama">
+      <button data-page="home" aria-current="page" title="Dashboard"><span class="nav-icon">⌂</span><span class="nav-label">Dashboard</span></button>
+      <button data-page="create" title="Buat Klip"><span class="nav-icon">✂</span><span class="nav-label">Buat Klip</span></button>
+      <button data-page="c3c" title="Preview Dua Video"><span class="nav-icon">▣</span><span class="nav-label">Preview Dua Video</span></button>
+      <button data-page="projects" title="Proyek Saya"><span class="nav-icon">▤</span><span class="nav-label">Proyek Saya</span></button>
+      <button data-page="videos" title="Video Saya"><span class="nav-icon">▷</span><span class="nav-label">Video Saya</span></button>
+      <button data-page="ai" title="Saran AI"><span class="nav-icon">✧</span><span class="nav-label">Saran AI</span></button>
+      <button data-page="publish" title="Publikasi"><span class="nav-icon">➤</span><span class="nav-label">Publikasi</span></button>
+      <button data-page="settings" title="Pengaturan"><span class="nav-icon">⚙</span><span class="nav-label">Pengaturan</span></button>
+    </nav>
+    <div class="aside-note">Edit lebih mudah.<br/><span>Prototipe offline — fitur AI belum aktif.</span></div>
+  </aside>
+  <main>
+    <header class="app-topbar">
+      <div class="topbar-left">
+        <button id="mobile-menu" class="hamburger" aria-label="Buka atau tutup menu samping" aria-expanded="true">☰</button>
+        <span>OPENCLIPPER / WORKSPACE</span>
+      </div>
+      <div class="topbar-right">
+        <div class="mode-switch" role="group" aria-label="Mode aplikasi">
+          <button data-mode="easy" aria-pressed="true">Mode Mudah</button>
+          <button data-mode="pro" aria-pressed="false">Mode Lengkap</button>
         </div>
-      </aside>
-      <main>
-        <header>
-          <span>WORKSPACE / OPENCLIPPER</span
-          ><span class="badge">Fondasi v0.1.0</span>
-        </header>
-        <section id="home">
-          <p class="eyebrow">SELAMAT DATANG</p>
-          <h1>Cerita hebat dimulai<br />dari satu klip.</h1>
-          <p class="muted">
-            Impor video Anda dan siapkan format untuk ide berikutnya.
-          </p>
-          <button class="primary" id="begin">＋ Buat klip baru</button>
-          <div class="cards" id="features"></div>
-        </section>
-        <section id="create" hidden>
-          <p class="eyebrow">STUDIO</p>
-          <h1>Buat Klip</h1>
-          <p class="muted">
-            Mulai dengan video lokal. File tetap berada di perangkat Anda.
-          </p>
-          <div id="drop-zone" class="drop-zone">
-            <strong>Letakkan video di sini</strong>
-            <p>atau pilih video dari perangkat</p>
-            <button class="primary" id="import">Pilih video</button
-            ><small
-              >MP4, WebM, MOV, MKV, AVI · dukungan codec mengikuti
-              WebView2</small
-            >
-          </div>
-          <p id="status" role="status" aria-live="polite"></p>
-          <div class="studio">
-            <div class="preview ratio-16-9" id="preview-frame">
-              <video
-                id="video"
-                controls
-                preload="metadata"
-                aria-label="Preview video lokal"
-              ></video
-              ><span id="placeholder">Preview video</span>
-            </div>
-            <div class="panel">
-              <h2>Pengaturan klip</h2>
-              <p id="filename">Belum ada video</p>
-              <p class="muted">Durasi: <span id="duration">—</span></p>
-              <label for="ratio">Rasio tampilan</label
-              ><select id="ratio">
+        <span class="badge">C3C2 · Lab</span>
+      </div>
+    </header>
+
+    <section id="home">
+      <p class="eyebrow">DASHBOARD / BERANDA</p>
+      <h1>Mau buat video apa hari ini?</h1>
+      <p class="muted">Pilih cara kerja dan pengaturan dasar. Tanpa kode, tanpa terminal.</p>
+      <div class="dashboard-actions">
+        <button id="begin" class="action-card action-primary"><strong>✂ Buat Klip</strong><span>Mulai dari video lokal</span></button>
+        <button id="dashboard-preview" class="action-card"><strong>▣ Preview Dua Video</strong><span>Uji layout video secara langsung</span></button>
+        <button data-goto="projects" class="action-card"><strong>▤ Lanjutkan Proyek</strong><span>Pengelolaan proyek · segera hadir</span></button>
+      </div>
+      <div class="dash-grid">
+        <div class="panel quick-panel">
+          <div class="section-line"><h2>Pengaturan Cepat</h2><span class="mini-note">Untuk preview lab, bukan hasil ekspor</span></div>
+          <p class="hint">Pengaturan ini dapat dikirim ke Preview Dua Video. Pengaturan AI, subtitle final, dan rendering akan dikembangkan bertahap.</p>
+          <div class="quick-grid">
+            <div>
+              <label for="dash-ratio">Rasio video</label>
+              <select id="dash-ratio">
                 <option value="9:16">9:16 · Vertikal</option>
-                <option value="16:9" selected>16:9 · Lanskap</option>
+                <option value="16:9" selected>16:9 · Lebar</option>
                 <option value="1:1">1:1 · Persegi</option>
               </select>
-              <p class="hint">
-                Rasio mengubah area preview. Pemotongan dan ekspor video belum
-                tersedia.
-              </p>
+            </div>
+            <div>
+              <label for="dash-font">Contoh gaya subtitle</label>
+              <select id="dash-font">
+                <option value="bold">Modern Tebal</option>
+                <option value="simple">Minimalis</option>
+                <option value="gaming">Gaming</option>
+              </select>
             </div>
           </div>
-        </section>
-        <section id="c3c" hidden>
-          <p class="eyebrow">EKSPERIMEN · CHECKPOINT 3C1</p>
-          <h1>Preview Lab — Dua Layer</h1>
-          <p class="muted">
-            Prototype interaktif WebView2. Ini belum memakai engine native
-            FFmpeg/libopenshot dan belum menjadi editor produksi.
-          </p>
-          <div class="c3c-actions">
-            <button class="primary" id="c3c-import-base">1 · Pilih video dasar</button>
-            <button class="primary" id="c3c-import-overlay">2 · Pilih video overlay</button>
+          <div class="subtitle-sample" id="subtitle-sample" data-font="bold" aria-label="Contoh gaya teks">INI CONTOH SUBTITLE</div>
+          <p class="hint">Ini hanya contoh tampilan font. Subtitle otomatis belum dibuat.</p>
+          <label for="dash-layout">Tata letak dua video</label>
+          <select id="dash-layout">
+            <option value="pip">Video kecil di sudut</option>
+            <option value="side">Dua video berdampingan</option>
+            <option value="stack">Dua video atas-bawah</option>
+            <option value="overlay">Dua video bertumpuk</option>
+          </select>
+          <div class="quick-actions">
+            <button class="primary" id="apply-quick">Terapkan ke Preview Dua Video →</button>
           </div>
-          <p id="c3c-status" role="status" aria-live="polite">
-            Pilih dua video lokal. Gunakan MP4 H.264/AAC untuk uji Windows.
-          </p>
-          <div class="c3c-stage" aria-label="Komposit preview dua video">
-            <video id="c3c-base" preload="metadata" playsinline aria-label="Video dasar"></video>
-            <video id="c3c-overlay" preload="metadata" playsinline muted aria-label="Video overlay"></video>
-            <div class="c3c-stage-label">EXPERIMENTAL · 2 VIDEO LAYERS · WEBVIEW2</div>
+          <p id="dash-feedback" class="hint" role="status">Untuk Smart Framing otomatis dan layout gaming, lihat rencana di halaman Saran AI.</p>
+        </div>
+        <div class="panel shortcut-panel">
+          <h2>Akses Cepat</h2>
+          <button data-goto="videos">▷ Video Saya <span>Belum ada video tersimpan →</span></button>
+          <button data-goto="ai">✧ Saran Klip AI <span>Direncanakan →</span></button>
+          <button data-goto="publish">➤ Publikasi <span>Direncanakan →</span></button>
+          <button data-goto="c3c">▣ Coba Layout <span>Sudah dapat diuji →</span></button>
+        </div>
+      </div>
+      <details class="upcoming"><summary>Fitur OpenClipper yang direncanakan</summary><div class="cards" id="features"></div></details>
+    </section>
+
+    <section id="create" hidden>
+      <p class="eyebrow">BUAT KLIP / FONDASI V0.1</p>
+      <h1>Buat Klip</h1>
+      <p class="muted">Impor video dari perangkat. Pemotongan AI, URL YouTube, judul otomatis, dan ekspor belum tersedia pada build ini.</p>
+      <div class="source-options">
+        <span class="source-active">✓ Dari Komputer</span><span class="source-planned">Dari YouTube · belum aktif</span>
+      </div>
+      <div id="drop-zone" class="drop-zone">
+        <strong>Letakkan video di sini</strong><p>atau pilih video dari perangkat</p>
+        <button class="primary" id="import">Pilih video</button>
+        <small>MP4, WebM, MOV, MKV, AVI · codec mengikuti WebView2</small>
+      </div>
+      <p id="status" role="status" aria-live="polite"></p>
+      <div class="studio">
+        <div class="preview ratio-16-9" id="preview-frame">
+          <video id="video" controls preload="metadata" aria-label="Preview video lokal"></video>
+          <span id="placeholder">Preview video</span>
+        </div>
+        <div class="panel">
+          <h2>Pengaturan klip</h2>
+          <p id="filename">Belum ada video</p>
+          <p class="muted">Durasi: <span id="duration">—</span></p>
+          <label for="ratio">Rasio tampilan</label>
+          <select id="ratio">
+            <option value="9:16">9:16 · Vertikal</option>
+            <option value="16:9" selected>16:9 · Lanskap</option>
+            <option value="1:1">1:1 · Persegi</option>
+          </select>
+          <p class="hint">Rasio mengubah area preview saja. Pemotongan dan ekspor belum tersedia.</p>
+          <button data-goto="c3c">Coba Preview Dua Video →</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="c3c" hidden>
+      <p class="eyebrow">PREVIEW DUA VIDEO / CHECKPOINT C3C2</p>
+      <h1>Atur Video, Tinggal Klik</h1>
+      <p class="muted">Mulai dengan satu video. Jika perlu, tambahkan video kedua dan pilih susunannya. Ini prototipe WebView2, belum editor produksi atau mesin native.</p>
+      <div class="c3c-actions">
+        <button class="primary" id="c3c-import-base">1 · Pilih video utama</button>
+        <button id="c3c-import-overlay">2 · Tambahkan video kedua (opsional)</button>
+      </div>
+      <p id="c3c-status" role="status" aria-live="polite">Pilih video utama terlebih dahulu. MP4 H.264/AAC atau WebM dianjurkan.</p>
+      <div class="c3c-workspace">
+        <div>
+          <div class="c3c-stage" id="c3c-stage" data-layout="pip" data-overlay="off" aria-label="Komposit preview dua video">
+            <video id="c3c-base" preload="metadata" playsinline aria-label="Video utama"></video>
+            <video id="c3c-overlay" preload="metadata" playsinline muted aria-label="Video tambahan"></video>
+            <div class="c3c-stage-label">PREVIEW · WEBVIEW2 / TANPA EKSPOR</div>
           </div>
           <div class="c3c-controls panel">
             <div class="c3c-transport">
-              <button id="c3c-play" disabled>▶ Play</button>
-              <button id="c3c-pause" disabled>Ⅱ Pause</button>
-              <span id="c3c-time">0:00</span>
-              <span class="muted">/ <span id="c3c-duration">—</span></span>
+              <button class="primary" id="c3c-play" disabled>▶ Putar</button>
+              <button id="c3c-pause" disabled>Ⅱ Jeda</button>
+              <strong id="c3c-time">0:00</strong><span class="muted">/ <span id="c3c-duration">—</span></span>
             </div>
-            <label for="c3c-scrub">Timeline — geser untuk seek/scrubbing</label>
+            <label for="c3c-scrub">Geser waktu video</label>
             <input id="c3c-scrub" type="range" min="0" max="0" step="0.033333" value="0" disabled />
             <div class="c3c-tracks">
-              <div><strong>V2 · Overlay</strong><span id="c3c-overlay-name">Belum dipilih</span></div>
-              <div><strong>V1 · Dasar + audio</strong><span id="c3c-base-name">Belum dipilih</span></div>
-            </div>
-            <div class="c3c-settings">
-              <label><input type="checkbox" id="c3c-toggle-overlay" checked /> Tampilkan overlay</label>
-              <label for="c3c-opacity">Transparansi overlay:
-                <span id="c3c-opacity-value">50%</span>
-              </label>
-              <input id="c3c-opacity" type="range" min="0" max="100" value="50" />
+              <div><strong>V2 · Video tambahan</strong><span id="c3c-overlay-name">Belum dipilih</span></div>
+              <div><strong>V1 · Video utama + suara</strong><span id="c3c-base-name">Belum dipilih</span></div>
             </div>
           </div>
-          <div class="panel">
-            <h2>Diagnostik sesi (bukan hasil benchmark engine native)</h2>
-            <div class="c3c-metrics">
-              <div><small>FPS perkiraan</small><strong id="c3c-fps">—</strong></div>
-              <div><small>Total frame video dasar</small><strong id="c3c-frames">0</strong></div>
-              <div><small>Frame drop (browser)</small><strong id="c3c-dropped">0</strong></div>
-              <div><small>Seek P50 / P95</small><strong id="c3c-seek">—</strong></div>
-              <div><small>Selisih waktu video</small><strong id="c3c-drift">—</strong></div>
-              <div><small>Koreksi sinkron</small><strong id="c3c-corrections">0</strong></div>
-              <div><small>CPU proses aplikasi</small><strong id="c3c-cpu">—</strong></div>
-              <div><small>RAM proses aplikasi</small><strong id="c3c-ram">—</strong></div>
-            </div>
-            <p class="hint">
-              Audio overlay sengaja dimatikan; hanya audio video dasar yang diputar.
-              Angka selisih waktu video bukan pengukuran A/V drift.
-              Penggunaan GPU, daya, performa engine native dan paritas ekspor belum diuji.
-            </p>
-          </div>
-        </section>
-        <section id="projects" hidden>
-          <p class="eyebrow">KOLEKSI</p>
-          <h1>Proyek</h1>
-          <div class="panel">
-            <h2>Ruang untuk karya berikutnya</h2>
-            <p class="muted">
-              Penyimpanan proyek belum tersedia pada v0.1.0. Video yang diimpor
-              hanya aktif selama sesi ini.
-            </p>
-            <button class="primary" id="project-create">
-              Mulai dengan video
-            </button>
-          </div>
-        </section>
-        <section id="settings" hidden>
-          <p class="eyebrow">PREFERENSI</p>
-          <h1>Pengaturan</h1>
-          <div class="panel">
-            <h2>OpenClipper Custom</h2>
-            <p>Versi 0.1.0 · Bahasa Indonesia · Tema gelap</p>
-            <p class="muted">
-              Pemrosesan AI, unduhan model, subtitle, editor manual, dan ekspor
-              belum diimplementasikan. Tidak ada video yang diunggah oleh
-              aplikasi.
-            </p>
-          </div>
-        </section>
-        <footer>OPENCLIPPER CUSTOM <span>Ruang kerja video lokal</span></footer>
-      </main>
-    </div>
-  </body>
+        </div>
+        <div class="panel c3c-options">
+          <h2>Susun Video</h2>
+          <label for="c3c-layout">Tampilan</label>
+          <select id="c3c-layout">
+            <option value="pip">Video kecil di sudut</option>
+            <option value="side">Berdampingan</option>
+            <option value="stack">Atas dan bawah</option>
+            <option value="overlay">Bertumpuk (transparan)</option>
+          </select>
+          <label for="c3c-ratio">Rasio kanvas preview</label>
+          <select id="c3c-ratio">
+            <option value="16:9" selected>16:9 · Lebar</option>
+            <option value="9:16">9:16 · Vertikal</option>
+            <option value="1:1">1:1 · Persegi</option>
+          </select>
+          <label class="inline-check"><input type="checkbox" id="c3c-toggle-overlay" checked /> Tampilkan video kedua</label>
+          <label for="c3c-opacity">Transparansi video kedua: <span id="c3c-opacity-value">50%</span></label>
+          <input id="c3c-opacity" type="range" min="0" max="100" value="50"/>
+          <p class="hint" id="c3c-layer-tip">Video tambahan belum dipilih. Video utama tetap bisa diputar.</p>
+          <p class="hint">Mode otomatis AI, framing wajah, pemotongan, dan ekspor masih dalam pengembangan.</p>
+        </div>
+      </div>
+      <details class="panel diagnostics"><summary>Diagnostik Teknis (opsional)</summary>
+        <p class="hint">Untuk pengujian, bukan hasil benchmark FFmpeg/libopenshot atau pengukuran sinkron audio.</p>
+        <div class="c3c-metrics">
+          <div><small>FPS perkiraan</small><strong id="c3c-fps">—</strong></div>
+          <div><small>Total frame video utama</small><strong id="c3c-frames">0</strong></div>
+          <div><small>Frame drop (browser)</small><strong id="c3c-dropped">0</strong></div>
+          <div><small>Seek P50 / P95</small><strong id="c3c-seek">—</strong></div>
+          <div><small>Selisih waktu video</small><strong id="c3c-drift">—</strong></div>
+          <div><small>Koreksi sinkron</small><strong id="c3c-corrections">0</strong></div>
+          <div><small>CPU proses aplikasi</small><strong id="c3c-cpu">—</strong></div>
+          <div><small>RAM proses aplikasi</small><strong id="c3c-ram">—</strong></div>
+        </div>
+      </details>
+    </section>
+
+    <section id="projects" hidden>
+      <p class="eyebrow">PROYEK SAYA</p><h1>Lanjutkan Karya</h1>
+      <div class="panel empty-state"><div class="empty-icon">▤</div><h2>Belum ada proyek tersimpan</h2>
+      <p class="muted">Penyimpanan proyek dan fitur lanjutkan editing belum tersedia pada C3C2. Video yang dipilih hanya ada selama sesi aplikasi.</p>
+      <button class="primary" id="project-create">Pilih video baru</button></div>
+    </section>
+    <section id="videos" hidden>
+      <p class="eyebrow">VIDEO SAYA</p><h1>Hasil Video</h1>
+      <div class="panel empty-state"><div class="empty-icon">▷</div><h2>Belum ada video hasil ekspor</h2>
+      <p class="muted">Galeri video, draft, dan fitur Edit Lagi akan tersedia setelah penyimpanan proyek dan render dibangun.</p>
+      <button data-goto="c3c" class="primary">Coba preview video →</button></div>
+    </section>
+    <section id="ai" hidden>
+      <p class="eyebrow">SARAN AI / RENCANA</p><h1>Klip Pilihan AI</h1>
+      <div class="panel empty-state"><div class="empty-icon">✧</div><h2>AI Clip Finder belum aktif</h2>
+      <p class="muted">Nantinya OpenClipper menganalisis video, memberi ranking momen menarik, membuat judul otomatis, subtitle, serta Smart Framing untuk podcast, gaming, dan multi-orang. Saat ini belum ada hasil analisis AI.</p>
+      <button data-goto="c3c" class="primary">Coba layout manual →</button></div>
+    </section>
+    <section id="publish" hidden>
+      <p class="eyebrow">PUBLIKASI / RENCANA</p><h1>Publikasikan Video</h1>
+      <div class="panel empty-state"><div class="empty-icon">➤</div><h2>Publikasi belum tersedia</h2>
+      <p class="muted">Ke depan, hasil ekspor bisa disiapkan bersama judul dan caption untuk platform yang didukung. C3C2 belum terhubung ke akun media sosial atau API publikasi.</p>
+      <button data-goto="videos" class="primary">Lihat Video Saya →</button></div>
+    </section>
+    <section id="settings" hidden>
+      <p class="eyebrow">PREFERENSI</p><h1>Pengaturan</h1>
+      <div class="panel"><h2>OpenClipper Custom · C3C2 Experimental</h2>
+      <p>Windows · Bahasa Indonesia · Tema Gelap</p>
+      <p class="muted">Mode Mudah menyembunyikan panel diagnostik; Mode Lengkap dapat membukanya. AI, unduhan YouTube, penyimpanan proyek, render, dan publikasi belum tersedia. Video yang dipilih melalui Preview Dua Video tidak diunggah ke server.</p></div>
+    </section>
+    <footer>OPENCLIPPER CUSTOM <span>Preview Windows eksperimental · belum mendukung ekspor</span></footer>
+  </main>
+</div>
+</body>
 </html>
