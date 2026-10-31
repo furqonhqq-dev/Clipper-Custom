@@ -1,6 +1,6 @@
 # Checkpoint 3 — Preview and timeline responsiveness
 
-## Status: C3A Windows passed; C3B submitted for Windows validation
+## Status: C3A/C3B Windows passed; C3C1 experimental UI submitted, Windows CI pending
 
 The user approved proceeding after Checkpoint 2. Changes are confined to
 `poc/v0.2.0-engine-comparison`. No merge into `main`, no replacement of
@@ -33,7 +33,7 @@ frame; B warms up the timeline. Both are CPU-oriented and offscreen.
 They do not display video to a user. Both input files contain AAC
 audio, but neither harness plays or synchronizes audio.
 
-### C3B — Native random seek/scrub prototype (implemented; CI pending)
+### C3B — Native random seek/scrub prototype (implemented; Windows CI passed)
 
 Workflow: `.github/workflows/poc-checkpoint3b.yml`.
 
@@ -63,18 +63,33 @@ cancellation, true cold-cache runs, equal cache-policy experiments,
 A/V playback sync, GPU/CPU/RAM profiling, Tauri/Rust adapter, Windows
 installer and a final engine selection.
 
-### C3C — Playback, resources and Tauri/Rust integration (NOT implemented)
+### C3C1 — Interactive Tauri/WebView2 preview lab (implemented; CI pending)
 
-- Show real 1080p preview in an actual Windows window (not headless CI).
-- Present 24/30 FPS target, dropped frames and A/V drift measurements.
-- Monitor CPU, GPU, RAM and power on real laptop hardware.
-- Connect timeline play/pause/seek commands to Tauri/Rust adapter.
-- Check frame accuracy, preview/export parity and Windows packaging.
-- Audit libopenshot, libopenshot-audio, Qt, FFmpeg and JUCE licensing
-  before any redistribution.
+See `poc/checkpoint3c/README.md` for scope and Windows manual QA.
+
+- Isolated navigation page with two browser-decoded video layers, playback,
+  pause, timeline scrubbing, overlay opacity and visibility.
+- UI reports browser frame counts/drops, seek P50/P95 and video-to-video
+  clock drift, not actual audio/video drift.
+- Windows-only Tauri/Rust IPC reports **host process** CPU and RAM.
+- A separate experimental NSIS identity avoids replacing working v0.1.
+- Windows CI builds installer and runs JS/browser tests. Manual WebView2
+  playback at 1080p is still unverified.
+
+**Not native Engine A/B:** FFmpeg and libopenshot remain unconnected to
+the UI. Browser video is only a temporary prototyping path. No engine
+has been selected.
+
+### C3C2 — Native preview, profiling and licensing (NOT implemented)
+
+- Connect native FFmpeg and libopenshot preview adapters to Tauri/Rust.
+- Present 24/30 FPS target, dropped frames and actual A/V drift.
+- Measure CPU, GPU, RAM and power on the user's real laptop.
+- Validate responsive seek cancellation, two-layer frame correctness,
+  preview/export parity, Windows packaging and dependency licenses.
 
 ### Gate
 
-Checkpoint 3 is **not complete** until C3B/C3C tests are implemented,
+Checkpoint 3 is **not complete** until C3C2 tests are implemented,
 executed and evaluated. C3A is only the first measurable milestone.
 The final engine selection remains `NO_ENGINE_SELECTED`.
