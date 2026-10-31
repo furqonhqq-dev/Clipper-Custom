@@ -22,7 +22,7 @@ try {
   // C3C2 navigation and quick settings, including hamburger behavior.
   const originalWidth = await page.locator("#sidebar").evaluate((el) => el.getBoundingClientRect().width);
   await page.locator("#sidebar-toggle").click();
-  assert.ok((await page.locator("#sidebar").evaluate((el) => el.getBoundingClientRect().width)) < originalWidth);
+  await page.waitForFunction((width) => document.getElementById("sidebar").getBoundingClientRect().width < width - 20, originalWidth);
   assert.equal(await page.locator("#sidebar-toggle").getAttribute("aria-expanded"), "false");
   await page.locator("#sidebar-toggle").click();
   await page.getByRole("button", { name: "Mode Lengkap" }).click();
