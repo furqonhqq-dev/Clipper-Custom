@@ -126,4 +126,6 @@ if (isTauri()) {
 window.addEventListener("beforeunload", () => {
   if (objectUrl) URL.revokeObjectURL(objectUrl);
 });
-\n// Isolated C3C1 prototype; does not modify the working v0.1 import/preview flow.\nmountC3C({ isTauri: isTauri(), open, convertFileSrc, invoke });\n
+
+// Isolated C3C1 prototype; does not modify the working v0.1 import/preview flow.
+mountC3C({ isTauri: isTauri(), open, convertFileSrc, invoke });
