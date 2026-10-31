@@ -1,5 +1,6 @@
 import "./style.css";
-import { isTauri, convertFileSrc } from "@tauri-apps/api/core";
+import { isTauri, convertFileSrc, invoke } from "@tauri-apps/api/core";
+import { mountC3C } from "./modules/c3c-preview.js";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { open } from "@tauri-apps/plugin-dialog";
 import {
@@ -125,3 +126,4 @@ if (isTauri()) {
 window.addEventListener("beforeunload", () => {
   if (objectUrl) URL.revokeObjectURL(objectUrl);
 });
+\n// Isolated C3C1 prototype; does not modify the working v0.1 import/preview flow.\nmountC3C({ isTauri: isTauri(), open, convertFileSrc, invoke });\n
