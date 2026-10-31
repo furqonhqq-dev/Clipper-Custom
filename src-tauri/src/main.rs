@@ -119,10 +119,26 @@ fn c3c_process_metrics() -> Result<[f64; 2], String> {
     }
 }
 
+mod p0_local_transcription;
+
+#[tauri::command]
+async fn p0_transcribe_video(
+    video_path: String,
+    ffmpeg_path: String,
+    whisper_path: String,
+    model_path: String,
+) -> Result<String, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        p0_local_transcription::transcribe(video_path, ffmpeg_path, whisper_path, model_path)
+    })
+    .await
+    .map_err(|e| format!("Pemrosesan AI lokal gagal: {e}"))?
+}
+
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
-        .invoke_handler(tauri::generate_handler![c3c_process_metrics])
+        .invoke_handler(tauri::generate_handler![c3c_process_metrics, p0_transcribe_video])
         .run(tauri::generate_context!())
         .expect("Gagal menjalankan OpenClipper Custom");
 }
