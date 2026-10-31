@@ -13,7 +13,7 @@
         <nav aria-label="Navigasi utama">
           <button data-page="home" aria-current="page">⌂ Beranda</button
           ><button data-page="create">＋ Buat Klip</button
-          ><button data-page="projects">▤ Proyek</button
+          ><button data-page="c3c">◧ Preview Lab C3C</button><button data-page="projects">▤ Proyek</button
           ><button data-page="settings">⚙ Pengaturan</button>
         </nav>
         <div class="aside-note">
@@ -77,6 +77,65 @@
                 tersedia.
               </p>
             </div>
+          </div>
+        </section>
+        <section id="c3c" hidden>
+          <p class="eyebrow">EKSPERIMEN · CHECKPOINT 3C1</p>
+          <h1>Preview Lab — Dua Layer</h1>
+          <p class="muted">
+            Prototype interaktif WebView2. Ini belum memakai engine native
+            FFmpeg/libopenshot dan belum menjadi editor produksi.
+          </p>
+          <div class="c3c-actions">
+            <button class="primary" id="c3c-import-base">1 · Pilih video dasar</button>
+            <button class="primary" id="c3c-import-overlay">2 · Pilih video overlay</button>
+          </div>
+          <p id="c3c-status" role="status" aria-live="polite">
+            Pilih dua video lokal. Gunakan MP4 H.264/AAC untuk uji Windows.
+          </p>
+          <div class="c3c-stage" aria-label="Komposit preview dua video">
+            <video id="c3c-base" preload="metadata" playsinline aria-label="Video dasar"></video>
+            <video id="c3c-overlay" preload="metadata" playsinline muted aria-label="Video overlay"></video>
+            <div class="c3c-stage-label">EXPERIMENTAL · 2 VIDEO LAYERS · WEBVIEW2</div>
+          </div>
+          <div class="c3c-controls panel">
+            <div class="c3c-transport">
+              <button id="c3c-play" disabled>▶ Play</button>
+              <button id="c3c-pause" disabled>Ⅱ Pause</button>
+              <span id="c3c-time">0:00</span>
+              <span class="muted">/ <span id="c3c-duration">—</span></span>
+            </div>
+            <label for="c3c-scrub">Timeline — geser untuk seek/scrubbing</label>
+            <input id="c3c-scrub" type="range" min="0" max="0" step="0.033333" value="0" disabled />
+            <div class="c3c-tracks">
+              <div><strong>V2 · Overlay</strong><span id="c3c-overlay-name">Belum dipilih</span></div>
+              <div><strong>V1 · Dasar + audio</strong><span id="c3c-base-name">Belum dipilih</span></div>
+            </div>
+            <div class="c3c-settings">
+              <label><input type="checkbox" id="c3c-toggle-overlay" checked /> Tampilkan overlay</label>
+              <label for="c3c-opacity">Transparansi overlay:
+                <span id="c3c-opacity-value">50%</span>
+              </label>
+              <input id="c3c-opacity" type="range" min="0" max="100" value="50" />
+            </div>
+          </div>
+          <div class="panel">
+            <h2>Diagnostik sesi (bukan hasil benchmark engine native)</h2>
+            <div class="c3c-metrics">
+              <div><small>FPS perkiraan</small><strong id="c3c-fps">—</strong></div>
+              <div><small>Total frame video dasar</small><strong id="c3c-frames">0</strong></div>
+              <div><small>Frame drop (browser)</small><strong id="c3c-dropped">0</strong></div>
+              <div><small>Seek P50 / P95</small><strong id="c3c-seek">—</strong></div>
+              <div><small>Selisih waktu video</small><strong id="c3c-drift">—</strong></div>
+              <div><small>Koreksi sinkron</small><strong id="c3c-corrections">0</strong></div>
+              <div><small>CPU proses aplikasi</small><strong id="c3c-cpu">—</strong></div>
+              <div><small>RAM proses aplikasi</small><strong id="c3c-ram">—</strong></div>
+            </div>
+            <p class="hint">
+              Audio overlay sengaja dimatikan; hanya audio video dasar yang diputar.
+              Angka selisih waktu video bukan pengukuran A/V drift.
+              Penggunaan GPU, daya, performa engine native dan paritas ekspor belum diuji.
+            </p>
           </div>
         </section>
         <section id="projects" hidden>
