@@ -1,6 +1,7 @@
 import "./style.css";
 import { isTauri, convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { mountC3C } from "./modules/c3c-preview.js";
+import { mountP0 } from "./modules/p0-clip-workspace.js";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { open } from "@tauri-apps/plugin-dialog";
 import {
@@ -168,3 +169,6 @@ $("apply-quick").onclick = () => {
     "Pengaturan layout dan rasio diterapkan ke Preview Dua Video. Gaya font hanya contoh tampilan.";
   navigate("c3c");
 };
+
+// P0-01 local candidate review. Does not invoke a remote AI service.
+mountP0();
