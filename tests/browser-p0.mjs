@@ -27,7 +27,7 @@ try {
   });
   await page.waitForFunction(()=>!document.getElementById("p0-analyze").disabled);
   await page.locator("#p0-count").selectOption("3");
-  await page.getByRole("button",{name:/Cari Kandidat/}).click();
+  await page.locator("#p0-analyze").click();
   await page.locator(".p0-result").first().waitFor();
   assert.ok(await page.locator(".p0-result").count()>=1);
   assert.ok(await page.locator(".p0-result").count()<=3);
