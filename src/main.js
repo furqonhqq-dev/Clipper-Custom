@@ -128,4 +128,4 @@ window.addEventListener("beforeunload", () => {
 });
 
 // Isolated C3C1 prototype; does not modify the working v0.1 import/preview flow.
-mountC3C({ isTauri: isTauri(), open, convertFileSrc, invoke });
+mountC3C({ isTauri: isTauri(), invoke });
