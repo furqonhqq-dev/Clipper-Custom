@@ -38,8 +38,11 @@ export function mountC3C({ isTauri, invoke }) {
     stage.dataset.overlay = overlayEnabled() ? "on" : "off";
     stage.style.aspectRatio = $("c3c-ratio").value.replace(":", " / ");
     const opacity = Number($("c3c-opacity").value) / 100;
-    overlay.style.opacity = String(opacity);
-    $("c3c-opacity-value").textContent = Math.round(opacity * 100) + "%";
+    // PiP and split modes should always be legible; transparency is for stacking.
+    const stacked = layout === "overlay";
+    overlay.style.opacity = stacked ? String(opacity) : "1";
+    $("c3c-opacity").disabled = !stacked;
+    $("c3c-opacity-value").textContent = stacked ? Math.round(opacity * 100) + "%" : "mode bertumpuk saja";
     $("c3c-layer-tip").textContent = !overlayReady()
       ? "Video tambahan belum dipilih. Video utama tetap bisa diputar."
       : !overlayEnabled()
