@@ -444,3 +444,59 @@ h2 { margin-top:0; }
   .app:not(.sidebar-collapsed) nav button { justify-content:flex-start; }
   .app.sidebar-collapsed aside { width:67px; }
 }
+
+
+/* P0-01 caption-based Clip Finder: real ranking, deliberately no simulated AI data. */
+.p0-steps {
+  display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px;
+  margin:24px 0 18px; font-size:12px;
+}
+.p0-steps span {
+  background:#1b2340; border:1px solid #394466; border-radius:10px;
+  padding:12px; text-align:center; color:#d2d8f7;
+}
+.p0-workspace { display:grid; grid-template-columns:minmax(270px,.9fr) minmax(0,1.3fr); gap:16px; align-items:start; }
+.p0-input-panel { position:sticky; top:12px; }
+.p0-input-panel input[type=file] {
+  width:100%; max-width:100%; padding:11px; border:1px dashed #65729d;
+  background:#0d1425; border-radius:10px; color:#d9e3f8; font:inherit; font-size:12px;
+}
+.p0-input-panel input[type=file]::file-selector-button {
+  background:#6654d6; border:0; border-radius:7px; color:#fff;
+  padding:9px 11px; margin-right:9px; cursor:pointer;
+}
+#p0-preview {
+  width:100%; max-height:340px; aspect-ratio:16/9; object-fit:contain;
+  border-radius:12px; border:1px solid #35415e; background:#05060c;
+}
+#p0-preview[hidden] { display:none; }
+#p0-status { line-height:1.7; font-size:13px; color:#c3bbff; min-height:32px; }
+.p0-selected { color:#b9b0ff; font-size:12px; }
+.p0-results { display:grid; gap:13px; max-height:none; }
+.p0-result {
+  background:#0c1423; border:1px solid #374365; padding:16px;
+  border-radius:13px;
+}
+.p0-result-top,.p0-row { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+.p0-result-top strong { color:#bcb3ff; }
+.p0-result-top span { font-size:12px; color:#c7d1e8; font-variant-numeric:tabular-nums; }
+.p0-result input[type=text] {
+  display:block; width:100%; background:#19243a; border:1px solid #435273;
+  color:#e9edff; border-radius:9px; font:inherit; padding:11px;
+  margin-top:12px; font-weight:650;
+}
+.p0-result input:focus-visible { outline:2px solid #aa96ff; }
+.p0-excerpt {
+  font-size:12px; line-height:1.6; border-left:3px solid #7567dc;
+  padding-left:12px; color:#c2cee4; max-height:96px; overflow:auto;
+}
+.p0-row button { padding:10px 12px; font-size:12px; }
+.p0-pick { display:flex; align-items:center; gap:6px; margin:0; cursor:pointer; }
+.p0-pick input { accent-color:#9985ff; width:18px; height:18px; }
+@media(max-width:990px) {
+  .p0-workspace { grid-template-columns:1fr; }
+  .p0-input-panel { position:static; }
+}
+@media(max-width:650px) {
+  .p0-steps { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
