@@ -1,0 +1,59 @@
+name: P0-01 local Clip Finder Windows experiment
+on:
+  push:
+    branches:
+      - feat/p0-clip-finder-mvp
+    paths:
+      - "src/**"
+      - "src-tauri/**"
+      - "index.html"
+      - "tests/**"
+      - "poc/p0/**"
+      - "package.json"
+      - ".github/workflows/p0-clip-finder.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  clip-finder-p0:
+    name: Windows x64 P0 transcript and clip-finder smoke / installer
+    runs-on: windows-latest
+    timeout-minutes: 70
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+      - name: Install frontend dependencies
+        run: npm ci
+      - name: Unit tests and JavaScript syntax
+        run: npm run check
+      - name: Browser test runtime
+        run: npx playwright install chromium
+      - name: Regression - original video import
+        run: npm run test:browser
+      - name: Regression - C3C2 preview and layout
+        run: node tests/browser-c3c.mjs
+      - name: P0 candidate ranking and real SRT import workflow
+        run: node tests/browser-p0.mjs
+      - name: Rust Windows build check
+        shell: pwsh
+        run: |
+          cargo fmt --manifest-path src-tauri/Cargo.toml -- --check
+          cargo check --locked --manifest-path src-tauri/Cargo.toml
+      - name: Build isolated P0 Windows installer
+        run: npm run tauri build -- --bundles nsis --ci -- --locked
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: OpenClipper-P0-01-Experimental-Windows-NSIS
+          path: src-tauri/target/release/bundle/nsis/*.exe
+          if-no-files-found: error
+          retention-days: 7
