@@ -36,7 +36,10 @@ export function mountC3C({ isTauri, invoke }) {
     const layout = $("c3c-layout").value;
     stage.dataset.layout = layout;
     stage.dataset.overlay = overlayEnabled() ? "on" : "off";
-    stage.style.aspectRatio = $("c3c-ratio").value.replace(":", " / ");
+    const ratio = $("c3c-ratio").value;
+    stage.style.aspectRatio = ratio.replace(":", " / ");
+    // Keep portrait/square canvases usable on typical laptop screens.
+    stage.style.maxWidth = ratio === "9:16" ? "320px" : ratio === "1:1" ? "520px" : "none";
     const opacity = Number($("c3c-opacity").value) / 100;
     // PiP and split modes should always be legible; transparency is for stacking.
     const stacked = layout === "overlay";
@@ -276,6 +279,12 @@ export function mountC3C({ isTauri, invoke }) {
       $("c3c-ram").textContent = "—";
     }
   }, 2000);
+  window.addEventListener("openclipper:navigate", (event) => {
+    if (event.detail?.page !== "c3c") {
+      master.pause();
+      overlay.pause();
+    }
+  });
   window.addEventListener("beforeunload", () => {
     clearInterval(refreshTimer);
     clearInterval(metricsTimer);
