@@ -72,6 +72,14 @@ jobs:
           command -v ffprobe
           echo "FFPROBE_DIR=$(cygpath -w /mingw64/bin)" >> "$GITHUB_ENV"
 
+      - name: Regression check generated C3B JSON before costly native builds
+        run: |
+          mkdir -p poc-results/checkpoint3b
+          g++ -std=c++17 -O0 -o poc-results/checkpoint3b/report_smoke.exe poc/checkpoint3b/report_smoke.cpp
+          poc-results/checkpoint3b/report_smoke.exe poc-results/checkpoint3b/report-smoke.json
+          python -m json.tool poc-results/checkpoint3b/report-smoke.json > /dev/null
+          python -c "import json; r=json.load(open('poc-results/checkpoint3b/report-smoke.json')); assert len(r['measurements']) == 24; assert set(r['passes']) == {'first','repeat'}"
+
       - name: Build and install native libopenshot-audio
         id: build_audio
         run: |
