@@ -500,3 +500,14 @@ h2 { margin-top:0; }
 @media(max-width:650px) {
   .p0-steps { grid-template-columns:repeat(2,minmax(0,1fr)); }
 }
+
+.p0-local-ai { margin:18px 0 16px; border-color:#494178; }
+.p0-local-ai summary { cursor:pointer; font-weight:700; color:#c8bcff; }
+.p0-native-grid {
+ display:grid;grid-template-columns:minmax(170px,220px) minmax(0,1fr);
+ align-items:center;gap:10px;margin-top:16px;
+}
+.p0-native-grid button { text-align:left; font-size:12px; padding:10px; }
+.p0-native-grid span { font-size:11px;color:#aebbd1;overflow-wrap:anywhere; }
+#p0-transcribe:disabled { opacity:.48;cursor:not-allowed; }
+@media(max-width:650px){.p0-native-grid{grid-template-columns:1fr;}}
