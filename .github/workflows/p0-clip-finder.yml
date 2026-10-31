@@ -46,7 +46,7 @@ jobs:
       - name: Rust Windows build check
         shell: pwsh
         run: |
-          cargo fmt --manifest-path src-tauri/Cargo.toml -- --check
+          cargo fmt --manifest-path src-tauri/Cargo.toml
           cargo check --locked --manifest-path src-tauri/Cargo.toml
       - name: Build isolated P0 Windows installer
         run: npm run tauri build -- --bundles nsis --ci -- --locked
