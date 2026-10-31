@@ -19,7 +19,7 @@
       <button data-page="c3c" title="Preview Dua Video"><span class="nav-icon">▣</span><span class="nav-label">Preview Dua Video</span></button>
       <button data-page="projects" title="Proyek Saya"><span class="nav-icon">▤</span><span class="nav-label">Proyek Saya</span></button>
       <button data-page="videos" title="Video Saya"><span class="nav-icon">▷</span><span class="nav-label">Video Saya</span></button>
-      <button data-page="ai" title="Saran AI"><span class="nav-icon">✧</span><span class="nav-label">Saran AI</span></button>
+      <button data-page="ai" title="Saran AI"><span class="nav-icon">✧</span><span class="nav-label">Cari Kandidat</span></button>
       <button data-page="publish" title="Publikasi"><span class="nav-icon">➤</span><span class="nav-label">Publikasi</span></button>
       <button data-page="settings" title="Pengaturan"><span class="nav-icon">⚙</span><span class="nav-label">Pengaturan</span></button>
     </nav>
@@ -83,12 +83,12 @@
           <div class="quick-actions">
             <button class="primary" id="apply-quick">Terapkan ke Preview Dua Video →</button>
           </div>
-          <p id="dash-feedback" class="hint" role="status">Untuk Smart Framing otomatis dan layout gaming, lihat rencana di halaman Saran AI.</p>
+          <p id="dash-feedback" class="hint" role="status">Untuk Smart Framing otomatis dan layout gaming, pengembangan dilakukan setelah P0 selesai.</p>
         </div>
         <div class="panel shortcut-panel">
           <h2>Akses Cepat</h2>
           <button data-goto="videos">▷ Video Saya <span>Belum ada video tersimpan →</span></button>
-          <button data-goto="ai">✧ Saran Klip AI <span>Direncanakan →</span></button>
+          <button data-goto="ai">✧ Cari Kandidat <span>Uji dari transkrip →</span></button>
           <button data-goto="publish">➤ Publikasi <span>Direncanakan →</span></button>
           <button data-goto="c3c">▣ Coba Layout <span>Sudah dapat diuji →</span></button>
         </div>
@@ -210,10 +210,46 @@
       <button data-goto="c3c" class="primary">Coba preview video →</button></div>
     </section>
     <section id="ai" hidden>
-      <p class="eyebrow">SARAN AI / RENCANA</p><h1>Klip Pilihan AI</h1>
-      <div class="panel empty-state"><div class="empty-icon">✧</div><h2>AI Clip Finder belum aktif</h2>
-      <p class="muted">Nantinya OpenClipper menganalisis video, memberi ranking momen menarik, membuat judul otomatis, subtitle, serta Smart Framing untuk podcast, gaming, dan multi-orang. Saat ini belum ada hasil analisis AI.</p>
-      <button data-goto="c3c" class="primary">Coba layout manual →</button></div>
+      <p class="eyebrow">P0-01 / CLIP FINDER BERBASIS TRANSKRIP</p>
+      <h1>Cari Kandidat Klip</h1>
+      <p class="muted">Mulai analisis isi video dari transkrip bertimestamp. Hasil ranking menggunakan aturan teks yang dapat diperiksa, <strong>bukan model AI</strong>. Transkripsi otomatis lokal menyusul pada tahap P0 berikutnya.</p>
+      <div class="p0-steps" aria-label="Langkah analisis awal">
+        <span>1 · Video panjang</span><span>2 · Transkrip SRT/VTT</span><span>3 · Cari kandidat</span><span>4 · Preview &amp; pilih</span>
+      </div>
+      <div class="p0-workspace">
+        <div class="panel p0-input-panel">
+          <h2>Mulai dari video sendiri</h2>
+          <label for="p0-video-file">Pilih video sumber (untuk preview)</label>
+          <input id="p0-video-file" type="file" accept="video/*,.mp4,.webm,.mov,.mkv,.avi" />
+          <p id="p0-video-name" class="hint">Belum ada video dipilih</p>
+          <video id="p0-preview" controls playsinline preload="metadata" hidden aria-label="Preview kandidat klip"></video>
+          <label for="p0-caption-file">Pilih transkrip video (SRT/VTT bertimestamp)</label>
+          <input id="p0-caption-file" type="file" accept=".srt,.vtt,text/vtt" />
+          <p id="p0-caption-name" class="hint">Belum ada transkrip dipilih</p>
+          <p class="hint">Video dan transkrip hanya dibaca di perangkat selama sesi ini. Waktu transkrip harus sesuai dengan video sumber.</p>
+          <label for="p0-count">Jumlah kandidat maksimum</label>
+          <select id="p0-count">
+            <option value="3">3 kandidat</option>
+            <option value="5">5 kandidat</option>
+            <option value="8" selected>8 kandidat</option>
+            <option value="12">12 kandidat</option>
+          </select>
+          <button class="primary" id="p0-analyze" disabled>✧ Cari Kandidat</button>
+          <p id="p0-status" role="status" aria-live="polite">Pilih transkrip SRT/VTT terlebih dahulu. Aplikasi belum bisa membuat transkrip otomatis dari video.</p>
+        </div>
+        <div class="panel">
+          <div class="section-line"><h2>Rekomendasi Potongan</h2><span class="mini-note">Ranking sementara</span></div>
+          <p id="p0-method" class="hint"></p>
+          <p class="hint">Skor dihitung dari karakteristik teks, bukan prediksi viral. Judul disarankan dari isi transkrip dan bisa kamu ubah.</p>
+          <p id="p0-selected" class="p0-selected" role="status"></p>
+          <div id="p0-results" class="p0-results" aria-live="polite">
+            <p class="muted">Kandidat akan muncul setelah analisis transkrip.</p>
+          </div>
+        </div>
+      </div>
+      <details class="upcoming"><summary>Kapan video otomatis dianalisis tanpa transkrip?</summary>
+        <p class="hint">Pada tahap P0 berikutnya, kita akan menghubungkan ekstraksi audio lokal dan model speech-to-text (Whisper). Ini belum disertakan pada installer P0-01, dan tidak ada unduhan model yang dilakukan diam-diam.</p>
+      </details>
     </section>
     <section id="publish" hidden>
       <p class="eyebrow">PUBLIKASI / RENCANA</p><h1>Publikasikan Video</h1>
