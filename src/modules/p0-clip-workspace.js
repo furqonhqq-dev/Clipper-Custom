@@ -2,7 +2,7 @@
 import { formatDuration } from "./video.js";
 import { parseCaptions, rankCaptionClips, P0_SCORING_METHOD } from "./p0-candidate-engine.js";
 
-export function mountP0() {
+export function mountP0({ isTauri = false, invoke = null, open = null } = {}) {
   const $ = (id) => document.getElementById(id);
   const status = $("p0-status");
   const preview = $("p0-preview");
@@ -138,6 +138,66 @@ export function mountP0() {
     setStatus(state.clips.length
       ? "Ditemukan " + state.clips.length + " kandidat berdasarkan aturan analisis transkrip. Periksa dan edit judul sebelum dipakai."
       : "Belum ada rentang transkrip yang cukup panjang (minimal 15 detik). Gunakan video/transkrip yang lebih panjang.");
+  });
+  // Optional real local speech recognition. The user explicitly selects
+  // every executable and model; this PoC does not silently download tools.
+  const native = { video: null, ffmpeg: null, whisper: null, model: null };
+  const nativeStatus = $("p0-native-status");
+  const nativeButton = $("p0-transcribe");
+  const nativeFilters = {
+    video: [{name:"Video",extensions:["mp4","mov","webm","mkv","avi","m4v"]}],
+    ffmpeg: [{name:"Program FFmpeg",extensions:["exe"]}],
+    whisper: [{name:"Program Whisper",extensions:["exe"]}],
+    model: [{name:"Model Whisper",extensions:["bin"]}],
+  };
+  function nativeReady() {
+    nativeButton.disabled = !isTauri || !Object.values(native).every(Boolean);
+  }
+  for (const button of document.querySelectorAll("[data-p0-pick]")) {
+    const kind = button.dataset.p0Pick;
+    button.disabled = !isTauri;
+    button.addEventListener("click", async () => {
+      if (!isTauri || !open) return;
+      try {
+        const selected = await open({
+          multiple:false,directory:false,filters:nativeFilters[kind],
+        });
+        if (typeof selected !== "string") return;
+        native[kind] = selected;
+        $("p0-native-" + kind).textContent = selected.split(/[\\/]/).pop();
+        nativeReady();
+      } catch (error) {
+        nativeStatus.textContent = "Gagal memilih file: " + String(error);
+      }
+    });
+  }
+  if (!isTauri) nativeStatus.textContent =
+    "Transkripsi lokal memerlukan aplikasi Windows. Analisis SRT/VTT tetap dapat dicoba di browser.";
+  nativeButton.addEventListener("click", async () => {
+    if (!isTauri || !invoke || !Object.values(native).every(Boolean)) return;
+    nativeButton.disabled = true;
+    nativeButton.textContent = "Sedang melakukan transkripsi…";
+    nativeStatus.textContent = "Ekstraksi audio dan pengenalan ucapan sedang berjalan di laptop. Jangan tutup aplikasi. Hasil tidak dikirim ke cloud.";
+    try {
+      const output = await invoke("p0_transcribe_video", {
+        videoPath:native.video,ffmpegPath:native.ffmpeg,
+        whisperPath:native.whisper,modelPath:native.model,
+      });
+      state.segments = parseCaptions(output);
+      state.clips = [];
+      state.selected.clear();
+      $("p0-caption-name").textContent = "Dihasilkan AI lokal · " + state.segments.length + " segmen";
+      $("p0-analyze").disabled = false;
+      nativeStatus.textContent = "Transkripsi selesai. Kandidat sedang dihitung dari transkrip nyata.";
+      $("p0-analyze").click();
+      nativeStatus.textContent = "Selesai. Periksa ranking, judul, dan preview kandidat di bawah.";
+    } catch (error) {
+      nativeStatus.textContent = "Transkripsi gagal: " + String(error);
+      setStatus("P0 AI lokal belum berhasil. Kamu masih bisa menggunakan file SRT/VTT.");
+    } finally {
+      nativeButton.textContent = "Mulai Transkripsi AI Lokal";
+      nativeReady();
+    }
   });
   $("p0-method").textContent = P0_SCORING_METHOD;
   window.addEventListener("beforeunload", () => {
