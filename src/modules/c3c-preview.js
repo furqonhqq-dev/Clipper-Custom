@@ -19,6 +19,7 @@ export function mountC3C({ isTauri, open, convertFileSrc, invoke }) {
   let frameCount = 0;
   let dropped = 0;
   let playStarted = 0;
+  let playFrameStart = 0;
   let syncCorrections = 0;
   let frameCallbackActive = false;
 
@@ -51,6 +52,7 @@ export function mountC3C({ isTauri, open, convertFileSrc, invoke }) {
     dropped = 0;
     syncCorrections = 0;
     playStarted = 0;
+    playFrameStart = 0;
     lastPresented = null;
     $("c3c-seek").textContent = "—";
     $("c3c-frames").textContent = "0";
@@ -82,10 +84,6 @@ export function mountC3C({ isTauri, open, convertFileSrc, invoke }) {
         const input = document.createElement("input");
         input.type = "file";
         input.accept = extensions.map((ext) => "." + ext).join(",");
-        input.onchange = () => {
-          const file = input.files?.[0];
-          if (file) load(index, URL.createObjectURL(file), file.name, null);
-        };
         // Browser-created blob URLs must be tracked for cleanup.
         input.onchange = () => {
           const file = input.files?.[0];
@@ -157,6 +155,7 @@ export function mountC3C({ isTauri, open, convertFileSrc, invoke }) {
     try {
       await Promise.all([master.play(), overlay.play()]);
       playStarted = performance.now();
+      playFrameStart = frameCount;
       reportStatus("Memutar dua layer. Audio hanya dari video dasar.");
       updateControls();
     } catch (error) {
@@ -221,7 +220,7 @@ export function mountC3C({ isTauri, open, convertFileSrc, invoke }) {
     if (playStarted && !master.paused) {
       const elapsed = (performance.now() - playStarted) / 1000;
       $("c3c-fps").textContent = elapsed > 0
-        ? displayNumber(frameCount / elapsed) : "—";
+        ? displayNumber((frameCount - playFrameStart) / elapsed) : "—";
     } else {
       $("c3c-fps").textContent = "—";
     }
