@@ -20,6 +20,7 @@ function navigate(page) {
       button.setAttribute("aria-current", "page");
     else button.removeAttribute("aria-current");
   }
+  window.dispatchEvent(new CustomEvent("openclipper:navigate", { detail: { page } }));
 }
 for (const button of document.querySelectorAll("nav button"))
   button.onclick = () => navigate(button.dataset.page);
