@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "OpenClipper C3C Preview Lab",
-  "version": "0.2.0",
+  "productName": "OpenClipper C3C2 Preview Lab",
+  "version": "0.2.1",
   "identifier": "dev.openclipper.custom.previewlab",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -13,7 +13,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "OpenClipper Custom — C3C Preview Lab (Experimental)",
+        "title": "OpenClipper Custom — C3C2 Preview Lab (Experimental)",
         "width": 1280,
         "height": 820,
         "minWidth": 720,
