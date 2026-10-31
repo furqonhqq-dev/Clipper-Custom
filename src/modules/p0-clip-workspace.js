@@ -56,6 +56,11 @@ export function mountP0() {
       updateSelection();
     } catch (error) {
       state.segments = [];
+      state.clips = [];
+      state.selected.clear();
+      results.replaceChildren();
+      updateSelection();
+      $("p0-caption-name").textContent = "Transkrip gagal dibaca";
       $("p0-analyze").disabled = true;
       setStatus("Transkrip belum bisa diproses: " + String(error.message || error));
     }
