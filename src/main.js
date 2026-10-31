@@ -171,4 +171,4 @@ $("apply-quick").onclick = () => {
 };
 
 // P0-01 local candidate review. Does not invoke a remote AI service.
-mountP0();
+mountP0({ isTauri: isTauri(), invoke, open });
