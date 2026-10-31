@@ -1,10 +1,10 @@
 // Checkpoint 3C1 — experimental two-video WebView2 preview.
 // This is an interactive browser-decoder UI prototype, not FFmpeg/libopenshot integration.
 // Overlay is muted; only background audio is heard. Do not interpret clock drift as A/V sync.
-import { extensions, fileName, formatDuration } from "./video.js";
+import { extensions, formatDuration } from "./video.js";
 import { displayNumber, driftMs, needsResync, seekSummary } from "./c3c-metrics.js";
 
-export function mountC3C({ isTauri, open, convertFileSrc, invoke }) {
+export function mountC3C({ isTauri, invoke }) {
   const $ = (id) => document.getElementById(id);
   const master = $("c3c-base");
   const overlay = $("c3c-overlay");
@@ -71,32 +71,20 @@ export function mountC3C({ isTauri, open, convertFileSrc, invoke }) {
     updateControls();
     reportStatus("Membaca metadata video…");
   }
-  async function choose(index) {
-    try {
-      if (isTauri) {
-        const path = await open({
-          multiple: false,
-          directory: false,
-          filters: [{ name: "Video", extensions }],
-        });
-        if (typeof path === "string") load(index, convertFileSrc(path), fileName(path));
-      } else {
-        const input = document.createElement("input");
-        input.type = "file";
-        input.accept = extensions.map((ext) => "." + ext).join(",");
-        // Browser-created blob URLs must be tracked for cleanup.
-        input.onchange = () => {
-          const file = input.files?.[0];
-          if (file) {
-            const url = URL.createObjectURL(file);
-            load(index, url, file.name, url);
-          }
-        };
-        input.click();
-      }
-    } catch (error) {
-      reportStatus("Tidak dapat membuka video: " + String(error));
-    }
+  function choose(index) {
+    // Use a browser File object and a revocable blob URL even in WebView2.
+    // This grants access only to the user-selected file; no wildcard
+    // asset-protocol filesystem permissions or extra Rust IPC required.
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = extensions.map((ext) => "." + ext).join(",");
+    input.onchange = () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      const url = URL.createObjectURL(file);
+      load(index, url, file.name, url);
+    };
+    input.click();
   }
   $("c3c-import-base").onclick = () => choose(0);
   $("c3c-import-overlay").onclick = () => choose(1);
