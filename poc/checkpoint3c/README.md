@@ -61,7 +61,11 @@ product name and application identifier
 6. Repeat with 640x360 clips. Report playback failures or media
    protocol errors; do not assume all codecs/paths work in WebView2.
 
-### Next: C3C2 (not started)
+### Next: C3C2 (implemented on experimental branch; Windows QA pending)
+
+See [C3C2.md](./C3C2.md) for beginner UX, V1-only playback regression and visual layout requirements.
+
+### Later: native engine adapter (not started)
 
 Implement a native frame adapter behind Tauri/Rust, with persistent
 FFmpeg and libopenshot backends, matching frame transport, bounded
