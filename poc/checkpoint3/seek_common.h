@@ -67,7 +67,7 @@ inline void report(const std::filesystem::path& path,const std::string& engine,
        <<"\"p50_ms\": "<<percentile(times,50)
        <<", \"p95_ms\": "<<percentile(times,95)
        <<", \"max_ms\": "<<*std::max_element(times.begin(),times.end())
-       <<"}"<<(pass?",":"")<<"\n";
+       <<"}"<<(pass==0?",":"")<<"\n";
   }
   out<<"  },\n  \"measurements\": [\n";
   for(size_t i=0;i<measurements.size();++i){
