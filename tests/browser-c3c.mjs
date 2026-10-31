@@ -96,7 +96,7 @@ try {
   await page.locator('nav [data-page="videos"]').click();
   await page.getByRole("heading", { name: "Hasil Video" }).waitFor();
   await page.locator('nav [data-page="ai"]').click();
-  await page.getByRole("heading", { name: "Klip Pilihan AI" }).waitFor();
+  await page.getByRole("heading", { name: "Cari Kandidat Klip" }).waitFor();
   await page.locator('nav [data-page="publish"]').click();
   await page.getByRole("heading", { name: "Publikasikan Video" }).waitFor();
   assert.deepEqual(errors, []);
